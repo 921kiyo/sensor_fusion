@@ -114,8 +114,6 @@ std::unordered_set<int> RansacPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, i
 			inliersResult = inliers;
 		}
 	}
-	cout << "Hello World!";
-	// cout << inliersResult;
 	return inliersResult;
 }
 

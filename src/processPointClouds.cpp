@@ -38,7 +38,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     // TODO: Create two new point clouds, one cloud with obstacles and other with segmented plane
     typename pcl::PointCloud<PointT>::Ptr obstCloud(new pcl::PointCloud<PointT>());
     typename pcl::PointCloud<PointT>::Ptr planeCloud(new pcl::PointCloud<PointT>());
-    std::cout << "Hi?";
 
     for (int index : inliers->indices)
         planeCloud->points.push_back(cloud->points[index]);
@@ -83,6 +82,85 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     std::cout << "plane segmentation took " << elapsedTime.count() << " milliseconds" << std::endl;
 
     return segResult;
+}
+
+template <typename PointT>
+std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::SegmentPlane2(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold)
+{
+    // std::unordered_set<int> inliersResult = Ransac3d(cloud, maxIterations, distanceThreshold);
+    std::unordered_set<int> inliersResult;
+    srand(time(NULL));
+
+    // For max iterations
+
+    while (maxIterations--)
+    {
+        std::unordered_set<int> inliers;
+        while (inliers.size() < 3)
+            inliers.insert(rand() % (cloud->points.size()));
+        float x1, y1, z1, x2, y2, z2, x3, y3, z3;
+        auto itr = inliers.begin();
+        x1 = cloud->points[*itr].x;
+        y1 = cloud->points[*itr].y;
+        z1 = cloud->points[*itr].z;
+        itr++;
+        x2 = cloud->points[*itr].x;
+        y2 = cloud->points[*itr].y;
+        z2 = cloud->points[*itr].z;
+        itr++;
+        x3 = cloud->points[*itr].x;
+        y3 = cloud->points[*itr].y;
+        z3 = cloud->points[*itr].z;
+
+        float i = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
+        float j = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
+        float k = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+
+        float a = i;
+        float b = j;
+        float c = k;
+        float d = -((i * x1) + (j * y1) + (k * z1));
+
+        for (int index = 0; index < cloud->points.size(); index++)
+        {
+            if (inliers.count(index) > 0)
+                continue;
+
+            pcl::PointXYZ point = cloud->points[index];
+            float x4 = point.x;
+            float y4 = point.y;
+            float z4 = point.z;
+
+            float distance = fabs(a * x4 + b * y4 + c * z4 + d) / sqrt(a * a + b * b + c * c);
+
+            if (distance <= distanceThreshold)
+                inliers.insert(index);
+        }
+
+        if (inliers.size() > inliersResult.size())
+        {
+            inliersResult = inliers;
+        }
+    }
+
+    typename pcl::PointCloud<PointT>::Ptr inliers(new pcl::PointCloud<PointT>());
+    typename pcl::PointCloud<PointT>::Ptr outliers(new pcl::PointCloud<PointT>());
+    if (!inliersResult.empty())
+    {
+        for (int index{0}; index < cloud->points.size(); index++)
+        {
+            const PointT point(cloud->points.at(index));
+            if (inliersResult.count(index))
+            {
+                inliers->points.push_back(point);
+            }
+            else
+            {
+                outliers->points.push_back(point);
+            }
+        }
+    }
+    return std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr>(outliers, inliers);
 }
 
 template <typename PointT>
