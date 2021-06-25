@@ -26,7 +26,7 @@ The workspace provided in the SFND classroom comes preinstallated with everythin
 
 ## Local Installation
 
-### Ubuntu 
+### Ubuntu
 
 1. Clone this github repo:
 
@@ -39,22 +39,22 @@ The workspace provided in the SFND classroom comes preinstallated with everythin
 
    ```cmake
    cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-   
+
    add_definitions(-std=c++14)
-   
+
    set(CXX_FLAGS "-Wall")
    set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
-   
+
    project(playback)
-   
+
    find_package(PCL 1.11 REQUIRED)
-   
+
    include_directories(${PCL_INCLUDE_DIRS})
    link_directories(${PCL_LIBRARY_DIRS})
    add_definitions(${PCL_DEFINITIONS})
    list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
-   
-   
+
+
    add_executable (environment src/environment.cpp src/render/render.cpp src/processPointClouds.cpp)
    target_link_libraries (environment ${PCL_LIBRARIES})
    ```
@@ -76,11 +76,11 @@ The workspace provided in the SFND classroom comes preinstallated with everythin
 
 #### Install via Homebrew
 1. install [homebrew](https://brew.sh/)
-2. update homebrew 
+2. update homebrew
 	```bash
 	$> brew update
 	```
-3. add  homebrew science [tap](https://docs.brew.sh/Taps) 
+3. add  homebrew science [tap](https://docs.brew.sh/Taps)
 	```bash
 	$> brew tap brewsci/science
 	```
@@ -88,7 +88,7 @@ The workspace provided in the SFND classroom comes preinstallated with everythin
 	```bash
 	$> brew options pcl
 	```
-5. install PCL 
+5. install PCL
 	```bash
 	$> brew install pcl
 	```
