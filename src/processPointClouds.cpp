@@ -27,8 +27,6 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     pcl::VoxelGrid<PointT> sor;
     typename pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
 
-    std::cout << typeid(sor).name() << std::endl;
-
     sor.setInputCloud(cloud);
     sor.setLeafSize(filterRes, filterRes, filterRes);
     sor.filter(*cloudFiltered);
@@ -159,7 +157,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
             if (inliers.count(index) > 0)
                 continue;
 
-            pcl::PointXYZ point = cloud->points[index];
+            const auto &point = cloud->points[index];
             float x4 = point.x;
             float y4 = point.y;
             float z4 = point.z;
@@ -207,11 +205,11 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
 
     // TODO:: Fill in the function to perform euclidean clustering to group detected obstacles
     // Creating the KdTree object for the search method of the extraction
-    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+    typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     tree->setInputCloud(cloud);
 
     std::vector<pcl::PointIndices> cluster_indices;
-    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+    pcl::EuclideanClusterExtraction<PointT> ec;
     ec.setClusterTolerance(clusterTolerance);
     ec.setMinClusterSize(minSize);
     ec.setMaxClusterSize(maxSize);
