@@ -132,18 +132,4 @@ public:
     std::vector<boost::filesystem::path> streamPcd(std::string dataPath);
 };
 
-void clusterHelper(int indice, const std::vector<std::vector<float>> points, std::vector<int> &cluster, std::vector<bool> processed, KdTree *tree, float distanceTol)
-{
-    processed[indice] = true;
-    cluster.push_back(indice);
-
-    std::vector<int> nearest = tree->search(points[indice], distanceTol);
-
-    for (int id : nearest)
-    {
-        if (!processed[id])
-            clusterHelper(id, points, cluster, processed, tree, distanceTol);
-    }
-}
-
 #endif /* PROCESSPOINTCLOUDS_H_ */

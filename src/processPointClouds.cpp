@@ -15,6 +15,19 @@ void ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr
     std::cout << cloud->points.size() << std::endl;
 }
 
+static void clusterHelper(int indice, const std::vector<std::vector<float>> points, std::vector<int> &cluster, std::vector<bool> processed, KdTree *tree, float distanceTol)
+{
+    processed[indice] = true;
+    cluster.push_back(indice);
+
+    std::vector<int> nearest = tree->search(points[indice], distanceTol);
+
+    for (int id : nearest)
+    {
+        if (!processed[id])
+            clusterHelper(id, points, cluster, processed, tree, distanceTol);
+    }
+}
 template <typename PointT>
 typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(typename pcl::PointCloud<PointT>::Ptr cloud, float filterRes, Eigen::Vector4f minPoint, Eigen::Vector4f maxPoint)
 {
@@ -196,7 +209,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 // template <typename PointT>
 // std::vector<std::vector<int>> ProcessPointClouds<PointT>::euclideanCluster(const std::vector<std::vector<float>> &points, KdTree *tree, float distanceTol)
 
-std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>> &points, KdTree *tree, float distanceTol)
+static std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>> &points, KdTree *tree, float distanceTol)
 {
 
     // TODO: Fill out this function to return list of indices for each cluster
