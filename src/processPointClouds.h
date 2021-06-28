@@ -59,7 +59,7 @@ struct KdTree
             *node = new Node(point, id);
         else
         {
-            uint cd = depth % 2;
+            uint cd = depth % 3;
 
             if (point[cd] < ((*node)->point[cd]))
                 insertHelper(&((*node)->left), depth + 1, point, id);
@@ -86,9 +86,9 @@ struct KdTree
                     ids.push_back(node->id);
             }
 
-            if ((target[depth % 2] - distanceTol) < node->point[depth % 2])
+            if ((target[depth % 3] - distanceTol) < node->point[depth % 3])
                 searchHelper(target, node->left, depth + 1, distanceTol, ids);
-            if ((target[depth % 2] + distanceTol) > node->point[depth % 2])
+            if ((target[depth % 3] + distanceTol) > node->point[depth % 3])
                 searchHelper(target, node->right, depth + 1, distanceTol, ids);
         }
     }
